@@ -1,11 +1,10 @@
 # --coding:utf-8--
-
 import os
 import scrapy
+import datetime
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from mmonly.items import mmonlyItem
-
 
 class Myspider(CrawlSpider):
     name = 'mmspider'
@@ -25,19 +24,19 @@ class Myspider(CrawlSpider):
         item = mmonlyItem()
         item['siteURL'] = response.url
         item['title'] = response.xpath('//h1/text()').extract_first()
-        item['fileName'] = self.base + item['title']
-        fileName = item['fileName']
-        if not os.path.exists(fileName):
-            os.makedirs(fileName)
+        item['path'] = self.base + item['title']
+        path = item['path']
+        if not os.path.exists(path):
+            os.makedirs(path)
         item['detailURL'] = response.xpath('//a[@class="down-btn"]/@href').extract_first()
         print(item['detailURL'] )
         num = response.xpath('//span[@class="nowpage"]/text()').extract_first()
-        item['path'] = item['fileName'] + '/' + str(num) + '.jpg'
+        item['fileName'] = item['path'] + '/' + str(num) + '.jpg'
 
+        print datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), item['fileName'], u'解析成功！'
         yield item
 
         next_page = response.xpath(u"//a[contains(text(),'下一页')]/@href").extract_first()
         if next_page is not None:
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse_item)
-

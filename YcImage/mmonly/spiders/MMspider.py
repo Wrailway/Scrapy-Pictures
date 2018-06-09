@@ -7,18 +7,26 @@ from scrapy.spiders import CrawlSpider, Rule
 from mmonly.items import mmonlyItem
 
 class Myspider(CrawlSpider):
+    """Spider that reads urls from redis queue (mmspider:start_urls)."""
+    #allowed_domains = ['mmonly.cc']
+    # start_urls = [
+    #     'http://www.mmonly.cc/mmtp/',
+    # ]
+    ##scrapy-redis
+    redis_key = "mmspider:strat_urls"
+    
     name = 'mmspider'
     base = r'/home/yinchong/Downloads/mmtp/'
-
-    allowed_domains = ['mmonly.cc']
-    start_urls = [
-        'http://www.mmonly.cc/mmtp/',
-    ]
 
     rules = (
         Rule(LinkExtractor(allow=(''), restrict_xpaths=(u"//a[contains(text(),'下一页')]")), follow=True),
         Rule(LinkExtractor(allow=('http://www.mmonly.cc/(.*?).html'), restrict_xpaths=(u"//div[@class='ABox']")), callback="parse_item", follow=False),
     )
+    def __init__(self, *args, **kwargs):
+        # Dynamically define the allowed domains list.
+        domain = kwargs.pop('domain', '')
+        self.allowed_domains = filter(None, domain.split(','))
+        super(MyCrawler, self).__init__(*args, **kwargs)
 
     def parse_item(self, response):
         item = mmonlyItem()

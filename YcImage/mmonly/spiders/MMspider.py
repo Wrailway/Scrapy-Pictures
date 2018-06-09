@@ -26,7 +26,7 @@ class Myspider(CrawlSpider):
         # Dynamically define the allowed domains list.
         domain = kwargs.pop('domain', '')
         self.allowed_domains = filter(None, domain.split(','))
-        super(MyCrawler, self).__init__(*args, **kwargs)
+        super(Myspider, self).__init__(*args, **kwargs)
 
     def parse_item(self, response):
         item = mmonlyItem()

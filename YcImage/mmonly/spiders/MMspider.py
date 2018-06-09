@@ -7,7 +7,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy_redis.spiders import RedisCrawlSpider
 from mmonly.items import mmonlyItem
 
-class Myspider(CrawlSpider):
+class Myspider(RedisCrawlSpider):
     """Spider that reads urls from redis queue (mmspider:start_urls)."""
     #allowed_domains = ['mmonly.cc']
     # start_urls = [
